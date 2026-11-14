@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10100e">
+<title>مطعم البيك</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="introScreen" class="intro-screen">
+  <div class="intro-content">
+    <div class="intro-icon">✦</div>
+    <h1>مطعم <span>البيك</span></h1>
+    <p>أهلاً وسهلاً بكم</p>
+    <div class="intro-line"></div>
+  </div>
+</div>
+
+<div class="fixed-ad">
+  <div class="fixed-ad-track">
+    <span>لطلب تصميم خاص بك اتصل الآن ☎ 0945373093</span>
+    <span>لطلب تصميم خاص بك اتصل الآن ☎ 0945373093</span>
+  </div>
+</div>
+
+
+<header class="header">
+  <div class="logo">مطعم <span>البيك</span></div>
+  <nav>
+    <button onclick="showPage('home')">الرئيسية</button>
+    <button onclick="showPage('menu')">قائمة الطعام</button>
+    <button onclick="showPage('orders')">طلباتي</button>
+  </nav>
+  <button class="manager-corner-btn" onclick="showPage('admin')">
+    🔐 خاص بالمدير
+  </button>
+</header>
+
+<main>
+  <section id="home" class="page active">
+    <div class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">مرحباً بكم في عالم النكهات</span>
+        <h1>الطعم الفاخر<br><span>يبدأ من هنا</span></h1>
+        <p>أشهى الأطباق والمشروبات، محضرة بعناية لتعيش تجربة لا تُنسى.</p>
+        <button class="main-btn" onclick="showPage('menu')">اكتشف قائمة الطعام</button>
+      </div>
+    </div>
+    <div class="welcome">
+      <span>مطعم البيك</span>
+      <h2>نكهة تستحق التجربة</h2>
+      <p>جودة عالية ومذاق مميز وخدمة تليق بكم.</p>
+    </div>
+  </section>
+
+  <section id="menu" class="page">
+    <div class="section-heading">
+      <span>اكتشف مذاقنا</span>
+      <h2>قائمة الطعام</h2>
+      <p>اختر القسم الذي ترغب بتصفحه</p>
+    </div>
+
+    <div class="category-buttons">
+      <button class="category-btn active" onclick="filterMenu('all',this)">الكل</button>
+      <button class="category-btn" onclick="filterMenu('drinks',this)">🥤 المشروبات</button>
+      <button class="category-btn" onclick="filterMenu('food',this)">🍽️ المأكولات</button>
+      <button class="category-btn" onclick="filterMenu('grills',this)">🔥 المشاوي</button>
+      <button class="category-btn" onclick="filterMenu('burgers',this)">🍔 البرغر</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+      <p class="loading">جاري تحميل المنتجات...</p>
+    </div>
+  </section>
+
+
+  <section id="admin" class="page">
+    <div class="section-heading">
+      <span>إدارة المطعم</span>
+      <h2>لوحة المدير</h2>
+      <p>إدارة المنتجات والأسعار والتوفر</p>
+    </div>
+
+    <div class="admin-wrap">
+      <section id="loginPanel" class="admin-panel">
+        <h2>تسجيل دخول المدير</h2>
+        <form id="loginForm" class="admin-form">
+          <input name="username" placeholder="اسم المستخدم" value="admin" required>
+          <input name="password" type="password" placeholder="كلمة المرور" required>
+          <button class="main-btn">دخول لوحة الإدارة</button>
+        </form>
+        <p id="loginMessage" class="admin-message"></p>
+      </section>
+
+      <section id="dashboard" class="hidden">
+        <div class="admin-panel">
+          <h2>إضافة منتج جديد</h2>
+          <form id="productForm" class="admin-form">
+            <input name="name" placeholder="اسم المنتج" required>
+            <select name="category">
+              <option value="drinks">المشروبات</option>
+              <option value="food">المأكولات</option>
+              <option value="grills">المشاوي</option>
+              <option value="burgers">البرغر</option>
+            </select>
+            <input name="price" type="number" min="0" placeholder="السعر بالليرة السورية" required>
+            <input name="image" type="url" placeholder="رابط الصورة">
+            <textarea name="description" placeholder="وصف المنتج"></textarea>
+            <button class="main-btn">إضافة المنتج</button>
+          </form>
+          <p id="productMessage" class="admin-message"></p>
+        </div>
+
+        <div class="admin-panel">
+          <h2>إدارة المنتجات</h2>
+          <div id="productsList">جاري التحميل...</div>
+        </div>
+
+
+        <div class="admin-panel">
+          <h2>🚚 إدارة مناطق التوصيل</h2>
+          <p>أضف المناطق وحدد سعر التوصيل لكل منطقة</p>
+          <form id="deliveryAreaForm" class="admin-form">
+            <input name="name" placeholder="اسم المنطقة" required maxlength="100">
+            <input name="price" type="number" min="0" placeholder="سعر التوصيل بالليرة السورية" required>
+            <button class="main-btn">إضافة منطقة</button>
+          </form>
+          <p id="deliveryAreaMessage" class="admin-message"></p>
+          <h3>المناطق والأسعار</h3>
+          <div id="deliveryAreasList">جاري تحميل المناطق...</div>
+        </div>
+
+        <button class="secondary-btn" onclick="logout()">تسجيل الخروج</button>
+      </section>
+    </div>
+  </section>
+\n  <section id="orders" class="page">
+    <div class="section-heading">
+      <span>حسابك الشخصي</span>
+      <h2>طلباتي</h2>
+      <p>ستظهر طلباتك هنا بعد تفعيل نظام الطلبات.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <h2>مطعم البيك</h2>
+  <p>شكراً لزيارتكم، نتمنى لكم تجربة شهية.</p>
+  <small>جميع الحقوق محفوظة © مطعم البيك</small>
+</footer>
+
+<script>
+(function () {
+  const intro = document.getElementById("introScreen");
+  if (!intro) return;
+
+  try {
+    if (sessionStorage.getItem("albaik_intro_seen")) {
+      intro.classList.add("intro-hidden");
+      return;
+    }
+    sessionStorage.setItem("albaik_intro_seen", "1");
+  } catch (e) {}
+
+  setTimeout(() => {
+    intro.classList.add("intro-hidden");
+  }, 2600);
+})();
+</script>
+
+<script src="/js/app.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>
