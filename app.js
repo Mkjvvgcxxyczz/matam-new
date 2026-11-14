@@ -3,6 +3,8 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,8 +12,10 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'products.json');
 const AREAS_FILE = path.join(DATA_DIR, 'delivery-areas.json');
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 if (!fs.existsSync(DATA_FILE)) {
   fs.writeFileSync(DATA_FILE, '[]');
@@ -55,12 +59,56 @@ function readAreas() {
 const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@12345';
 const adminHash = bcrypt.hashSync(adminPassword, 12);
 
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => {
+    const extensions = {
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/webp': '.webp',
+      'image/gif': '.gif'
+    };
+    const ext = extensions[file.mimetype];
+    if (!ext) return cb(new Error('نوع الصورة غير مدعوم'));
+    cb(null, Date.now() + '-' + crypto.randomBytes(6).toString('hex') + ext);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    cb(allowed.includes(file.mimetype) ? null : new Error('اختر صورة JPG أو PNG أو WEBP أو GIF'), allowed.includes(file.mimetype));
+  }
+});
+
 function requireAdmin(req, res, next) {
   if (req.session && req.session.isAdmin) return next();
   res.status(401).json({ error: 'يجب تسجيل دخول المدير' });
 }
 
 const categories = ['drinks', 'food', 'grills', 'burgers'];
+
+// رفع صور المنتجات من الهاتف
+app.post('/api/admin/upload', requireAdmin, (req, res) => {
+  upload.single('image')(req, res, err => {
+    if (err) {
+      return res.status(400).json({
+        error: err.code === 'LIMIT_FILE_SIZE'
+          ? 'حجم الصورة يجب ألا يتجاوز 8 ميغابايت'
+          : err.message
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'لم يتم اختيار صورة' });
+    }
+
+    res.json({ image: '/uploads/' + req.file.filename });
+  });
+});
 
 // المنتجات
 app.get('/api/products', (req, res) => {
@@ -269,6 +317,7 @@ app.delete('/api/admin/delivery-areas/:id', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
+app.use('/uploads', express.static(UPLOAD_DIR));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, '0.0.0.0', () => {

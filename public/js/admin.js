@@ -64,19 +64,82 @@ adminGet('loginForm').addEventListener('submit', async e => {
   }
 });
 
+
+const productImageInput = adminGet('productImage');
+const productImagePreview = adminGet('productImagePreview');
+
+productImageInput?.addEventListener('change', () => {
+  const selected = productImageInput.files[0];
+
+  if (!selected) {
+    productImagePreview?.classList.add('hidden');
+    return;
+  }
+
+  if (selected.size > 8 * 1024 * 1024) {
+    alert('حجم الصورة يجب ألا يتجاوز 8 ميغابايت');
+    productImageInput.value = '';
+    productImagePreview?.classList.add('hidden');
+    return;
+  }
+
+  if (productImagePreview) {
+    productImagePreview.src = URL.createObjectURL(selected);
+    productImagePreview.classList.remove('hidden');
+  }
+});
+
 adminGet('productForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target));
-  data.price = Number(data.price);
+
+  const form = e.target;
+  const data = new FormData(form);
+  let image = '';
 
   try {
+    const selected = productImageInput?.files[0];
+
+    if (selected) {
+      adminGet('productMessage').textContent = 'جاري رفع الصورة...';
+
+      const uploadData = new FormData();
+      uploadData.append('image', selected);
+
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: uploadData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'فشل رفع الصورة');
+      }
+
+      image = result.image;
+    }
+
+    adminGet('productMessage').textContent = 'جاري حفظ المنتج...';
+
     await adminApi('/api/admin/products', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        name: data.get('name'),
+        category: data.get('category'),
+        description: data.get('description'),
+        price: Number(data.get('price')),
+        image
+      })
     });
 
-    e.target.reset();
-    adminGet('productMessage').textContent = 'تمت إضافة المنتج بنجاح';
+    form.reset();
+
+    if (productImagePreview) {
+      productImagePreview.removeAttribute('src');
+      productImagePreview.classList.add('hidden');
+    }
+
+    adminGet('productMessage').textContent = 'تمت إضافة المنتج والصورة بنجاح';
     loadAdminProducts();
 
     if (typeof loadProducts === 'function') loadProducts();

@@ -556,3 +556,25 @@ footer small { display: block; margin-top: 20px; }
     flex-wrap: wrap;
   }
 }
+
+/* رفع صور المنتجات من الهاتف */
+.product-image-preview {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 260px;
+  height: 180px;
+  object-fit: contain;
+  background: #10100e;
+  border: 1px solid #d6ad60;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.admin-form input[type="file"] {
+  grid-column: 1 / -1;
+  padding: 14px;
+  cursor: pointer;
+  border: 1px dashed #d6ad60;
+  background: #181611;
+}
+

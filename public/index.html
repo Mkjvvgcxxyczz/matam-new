@@ -106,7 +106,9 @@
               <option value="burgers">البرغر</option>
             </select>
             <input name="price" type="number" min="0" placeholder="السعر بالليرة السورية" required>
-            <input name="image" type="url" placeholder="رابط الصورة">
+            <label for="productImage">صورة المنتج من الهاتف</label>
+            <input id="productImage" name="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            <img id="productImagePreview" class="product-image-preview hidden" alt="معاينة صورة المنتج">
             <textarea name="description" placeholder="وصف المنتج"></textarea>
             <button class="main-btn">إضافة المنتج</button>
           </form>
