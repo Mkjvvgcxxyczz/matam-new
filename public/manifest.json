@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "مطعم البيك",
+  "short_name": "البيك",
+  "description": "تطبيق مطعم البيك للطلبات وقائمة الطعام",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#b90000",
+  "background_color": "#10100e",
+  "icons": [
+    {
+      "src": "/icons/albaik-icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
